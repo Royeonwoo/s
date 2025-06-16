@@ -219,6 +219,7 @@ class EDA:
             "6. 상관관계 분석",
             "7. 이상치 제거",
             "8. 로그 변환"
+            "9. 연도별 × 계절별 분석"
         ])
 
         # 1. 목적 & 분석 절차
@@ -448,6 +449,25 @@ class EDA:
                 > - 오른쪽: 로그 변환 후 분포는 훨씬 균형잡힌 형태로, 중앙값 부근에 데이터가 집중됩니다.  
                 > - 극단치의 영향이 완화되어 이후 분석·모델링 안정성이 높아집니다.
                 """)
+        with tabs[8]:
+            st.header("📅 연도별 × 계절별 평균 대여량")
+            df['year'] = df['datetime'].dt.year
+            season_map = {1: "봄", 2: "여름", 3: "가을", 4: "겨울"}
+            df['season_name'] = df['season'].map(season_map)
+            grouped = df.groupby(['year', 'season_name'])['count'].mean().reset_index()
+
+            fig, ax = plt.subplots(figsize=(8, 5))
+            sns.barplot(data=grouped, x="season_name", y="count", hue="year", ax=ax)
+            ax.set_ylabel("평균 대여량")
+            ax.set_xlabel("계절")
+            ax.set_title("연도별 × 계절별 평균 대여량")
+            st.pyplot(fig)
+
+            st.markdown("""
+            > **해석 예시:**  
+            > - 여름과 가을에 대여량이 많고, 겨울은 낮습니다.  
+            > - 2012년이 2011년보다 계절 전반에 걸쳐 평균 대여량이 높게 나타나는 경향이 있습니다.
+            """)
 
 
 # ---------------------
